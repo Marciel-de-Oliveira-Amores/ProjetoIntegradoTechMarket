@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato Bancário - TechMarket</title>
+    <link rel="stylesheet" href="/extrato.css/style.css">
+</head>
+<body>
+    <header>
+        <h1>💳 TechMarket Bank</h1>
+        <nav>
+            <a href="../cadastro/index.html">Cadastrar Cliente</a>
+            <a href="#">Extrato</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="extrato-container">
+            <h2>Extrato da Conta</h2>
+            <div class="saldo">
+                <h3>Saldo Atual: <span id="saldo">R$ 0,00</span></h3>
+            </div>
+
+            <div class="input-area">
+                <label for="contaId">ID da Conta:</label>
+                <input type="number" id="contaId" placeholder="Digite o ID da conta">
+                <button id="buscarExtrato">Buscar Extrato</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Transação</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Valor (R$)</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="extratoBody">
+                    <tr><td colspan="6">Nenhuma transação encontrada</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 TechMarket Pagamentos - Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+    document.getElementById("buscarExtrato").addEventListener("click", async () => {
+        const id = document.getElementById("contaId").value;
+        const saldoSpan = document.getElementById("saldo");
+        const extratoBody = document.getElementById("extratoBody");
+
+        if (!id) {
+            alert("Informe o ID da conta!");
+            return;
+        }
+
+        try {
+            const saldoRes = await fetch(`http://localhost:3000/api/accounts/${id}/balance`);
+            const saldoData = await saldoRes.json();
+
+            if (saldoData.balance !== undefined) {
+                saldoSpan.textContent = `R$ ${saldoData.balance.toFixed(2)}`;
+            } else {
+                saldoSpan.textContent = "Conta não encontrada";
+            }
+
+            // Simulação de busca de transações (mock local)
+            extratoBody.innerHTML = `
+                <tr>
+                    <td>1a2b3c4d</td>
+                    <td>${id}</td>
+                    <td>2</td>
+                    <td>250.00</td>
+                    <td>2025-11-07 10:00</td>
+                    <td>✔️ Concluída</td>
+                </tr>
+            `;
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao buscar o extrato.");
+        }
+    });
+</script>
